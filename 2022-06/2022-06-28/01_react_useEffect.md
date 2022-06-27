@@ -1,47 +1,61 @@
-## 1. Portal
+## 1. useEffect
 
-- 리액트 내부의 컴포넌트 구조에서는 다이얼로그 등 어느 컴포넌트에도 위치하지 않는 기능들이 존재한다.
-- 하지만, 이러한 다이얼로그는 구조상 내부에 있을 수 있다.
-- 이러한 구조를 `portal`을 이용해 원하는 위치(body의 직계 자식)로 끌어올릴 수 있다.
+- `useEffect`는 http 요청 등 `sideEffects`를 처리하기 위한 도구이다.
 
-#### *사용하기 위한 조건
-
-1. 옮기고싶은 컴포넌트가 이동할 위치
-2. 컴포넌트가 그 자리에 포털을 가져간다고 알려줌.
+- Vue의 watch 속성과도 같이 특정 값이 변경될 때만, 작동하는 hook이다.
+- 리액트 내에서 값이 변하는 경우, 해당 컴포넌트의 데이터가 변경된 직후 해당하는 컴포넌트의 모든 값이 다시 랜더링된다.
+- 그렇다면, HTTP 요청을 보내는 함수가 있다면, 다른 값이 변할 때마다, 계속해서 요청을 보내는 것이다.  즉, 요청을 함으로써 변경되는 state로 인해 계속해서 요청을 보내고, 무한루프에 빠질 위험이 있다.
+- 그렇기에, `useEffect`는 모든 컴포넌트 평가가 이루어지고, 마지막으로 실행되는데, 그 때 값이 변경되었는지 확인해준다.
 
 
 
-#### index.html
-
-- portal로 옮겨줄 위치를 `index.html` 즉, 모든 요소들이 번들링되는 위치에서 배치시킨다.
-
-```html
-<div id="modal-portal"></div>
-```
-
-
-
-#### Component.js
-
-- 리액트에서는 `react-dom` API를 사용하지 않는다. 리액트 문법으로 모두 해결하며, 가상 돔에서 실제 돔으로 접근하면 예기치 않은 결과를  초래할 수 있기 떄문이다.
-- 하지만, `createPortal`은 `ReactDOM`의 메서드로 (JSX 컴포넌트, 리액트 DOM API로 선택한 요소)를 통해 실제 번들링될 `index.html`에 위치를 지정해 순간이동 시킬 수 있다.
-- 이렇게 정해진 위치는 옮길 컴포넌트가 얼마나 깊숙한 곳에 존재하던지 상관없이 위치가 항상 지정한 위치로 오게 된다.
+### 기본 동작
 
 ```react
-import ReactDOM from 'react-dom'
-
-const ModalPortal = props => {
-    return <div>이 div 태그를 옮길겁니다.</div>
-}
-
-//createPoratl은 (랜더링될 리액트 노드, 위치를 가리키는 포인터)
-const Component = props => {
-    return (
-    	<React.Fragment>
-          {ReactDOM.createPortal(<ModalPortal/>, document.getElementById('modal-portal'))}
-        
-        </React.Fragment>
-    )
-}
+useEffect(() => { }, [ dependencies ])
 ```
 
+- useEffect의 첫 인자는 모든 평가 후, 지정된 의존성(`dependencies`)가 변경되었다면 실행하는 함수이다.
+- 매번 배열 안에 지정해둔 값이 변화하면, 첫 인자의 함수를 실행해준다.
+- 만약 `dependencies`가 빈 `[] `로 값이 들어오면, 초기에 `mount`될 때, 값이 변경되었음으로 감지해 실행하고 다시는 바뀌지 않는다.
+  - 추가적으로, 함수가 변하는 경우는 존재하지 않으므로 함수는 넣지 않는다.
+  - 왜냐하면, 자바스크립트에서 함수의 내부는 무결하기 때문이다.
+
+- 두 번째 인자가 아예 없다면? `useEffect`가 기능을 상실해 매번 랜더링될 때 실행된다.
+
+
+
+### 예시
+
+```react
+useEffect(() => {
+    setState((state) => state + changeValue)
+}, [changeValue])
+```
+
+- 위의 `useEffect`는 `changeValue`값이 변화하면, 내부의 함수를 실행하는 기능을 한다.
+
+
+
+### Cleanup
+
+```react
+useEffect(() => {
+    const timecheck = setTimeout(() => {
+      console.log('1초 뒤에 실행될 거야!')
+      setState((state) => state + changeValue)
+    }, 1000)
+    
+    return () => {
+        console.log("CLEAN UP")
+        clearTimeout(timecheck)
+    } 
+}, [changeValue])
+```
+
+- 어떠한 동작, 클릭, 타입 시에 `changeValue`가 변경된다면 어떻게 될까?
+- http 요청을 보내는 동작이라고 생각하면, 엄청나게 많은 요청을 보내야할 부담이 생긴다.
+- 그렇기에, 첫 실행 시에는 `setTimeout`함수 내부를 제외하고 아무 일도 일어나지 않지만, 다시 값이 바뀌면, `console.log("CLEAN UP")`을 가장 먼저 실행한다.
+
+- 위를 보면, setTimeout의 내부가 실행되기 직전에 또 다시 `changeValue`의 값이 바뀌고 useEffect가 실행되면 `clearTimeout`에 의해서 동작을 막을 수 있다.
+  - 즉, 타이핑을 한다고 가정하면, 타이핑이 1초 이상 멈추지 않는 이상 계속해서 동작을 선제적으로 멈추는 작업을 하고있는 것이다.
