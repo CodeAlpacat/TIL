@@ -20,9 +20,20 @@
 
 - 컴포넌트는 데이터를 **절대 조작하지 않는다.**
 
+- Redux의 중앙 데이터 저장소는 `State` 즉, 상태로써 존재한다.
+
   
 
 ### 1. Reducer
 
 - Reducer는 **데이터의 변형(Mutation)**을 담당한다.
-- 
+- useReducer와는 다른 개념이다.
+- ex) 숫자 리스트를 받아 숫자의 합으로 변화시킴.
+
+
+
+### 2. Action
+
+- 컴포넌트가 `발송(Dispatch)`하는 것이다.
+  - 버튼을 클릭하면 `Dispatch`된 `Action`이 `Reducer`로 알린다.
+  - `Action`을 받은 `Reducer`는 받은 작업을 수행해 `상태(State)`를 변화시켜 그대로 중앙 데이터 저장소에 저장해 관리한다.
