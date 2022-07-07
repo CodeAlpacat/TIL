@@ -22,7 +22,7 @@ export default store;
 
 
 
-// 원래 redux로 구현한 Counter
+// // 원래 redux로 구현한 Counter
 
 // const countReducer = (state = initialState, action) => {
 //   if (action.type === "increment") {
