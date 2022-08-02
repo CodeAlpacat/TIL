@@ -103,6 +103,7 @@ export default useHttp;
 
 ```react
 const [tasks, setTasks] = useState([])
+const { isLoading, error, sendRequest: fetchTasks } = useHttp()
 
 const transformTasks = useCallback((taskObj) => {
     const loadedTasks = [];
@@ -114,12 +115,14 @@ const transformTasks = useCallback((taskObj) => {
     setTasks(loadedTasks)
 }, [])
 
-const { isLoading, error, sendRequjest: fetchTasks } = useHttp({url: 'https://주소주소'}, transformTasks) 
+
+
+
 //첫 인자는 요청 세부사항이 담긴 객체, 두 번째는 요청에 대한 세부 동작이 있는 함수
 
 
 useEffect(() => {
-    fetchTasks();
+    fetchTasks({url: 'https://주소주소'}, transformTasks);
 }, [fetchTasks])
 
 
