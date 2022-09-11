@@ -4,7 +4,7 @@
 
 
 
-## textInput에 대하여
+## TextInput에 대하여
 
 - `Input value`를 바인딩 해주는 방법
 
@@ -19,7 +19,6 @@
           />
     ```
   
-
 - 속성
   - `value`
   - `placeholder`
