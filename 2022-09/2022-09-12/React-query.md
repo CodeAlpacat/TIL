@@ -100,7 +100,7 @@ function App() {
 - `Query Key` - 이 데이터를 관리할 키 값 (위의 데이터는 `todos`키에 대한 데이터)
   - 파이썬 딕셔너리 생각하면 된다. (로컬 스토리지와도 같음)
   - `Array`로 저장해 `['todos', 1]`처럼 저장해서 페이지네이션에도 활용이 가능함.
-- 리액트 쿼리의 반환값
+- `useQuery`의 반환값
   - `data`: 요청에 성공한 데이터
   - `error`: 에러 반환 객체
   - `isFetching`: 요청 중일 때, `true`
@@ -110,3 +110,13 @@ function App() {
   - etc
 
 ![image](https://user-images.githubusercontent.com/90893428/189600652-c6de8931-3554-4368-8853-c2ed0dcba112.png)
+
+- `useQuery`의 옵션
+  - `onSuccess onError, onSettled` 등 성공 실패 완료 시 실행할 Side Effect 정의
+  - `enabled`: 자동으로 query 실행할지 여부
+  - `retry`: query 실패 시, 자동으로 `retry`할건지 여부
+  - `select` 성공 시 가져온 data를 가공해서 전달
+  - `keepPreviousData`: 새롭게 fetching 시 이전 데이터 유지 여부
+  - `refetchInterval`: 주기적으로 refetch 할지 여부
+  - etc
+- ![image](https://user-images.githubusercontent.com/90893428/189602088-b26fa30c-980d-4fc7-893d-e30ce46b30a4.png)
